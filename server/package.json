@@ -12,7 +12,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/gfrsoftware/structurizr-dsl-abacus-extension"
+		"url": "https://github.com/elsevierlabs-os/structurizr-dsl-abacus-extension"
 	},
 	"dependencies": {
 		"chevrotain": "^10.1.2",

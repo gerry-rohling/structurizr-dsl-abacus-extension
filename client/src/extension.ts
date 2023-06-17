@@ -10,6 +10,7 @@ import { AbacusComponentProvider, AbacusNode } from './provider/tree-data-provid
 import { StructurizrClient } from './StructurizrClient';
 import path = require('path');
 import { DrawioEditorProvider } from './DrawioEditor';
+import { StructurizrCompiler } from './StructurizrCompiler';
 
 let client: LanguageClient;
 
@@ -50,7 +51,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "structurizr-dsl-abacus-extension" is now active!');
+	console.log('Congratulations, your extension "abacus-structurizr-dsl-extension" is now active!');
 	
 	context.subscriptions.push(
 		vscode.authentication.registerAuthenticationProvider(
@@ -107,10 +108,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('drawio.diagrams', async () => {
+		vscode.commands.registerCommand('drawio.diagrams', async (uri: vscode.Uri) => {
 			// Here we need to call the drawio compiler to generate the drawio files.
 			// Likely a version of the DrawIOFormatter
-			vscode.window.showWarningMessage('This capability is coming soon.');
+			await StructurizrCompiler.compileToDrawIO(uri);
 		})
 	);
 
@@ -127,24 +128,24 @@ export function deactivate() {
 	if (client) {
 		client.stop();
 	}
-	console.log('Your extension "structurizr-dsl-abacus-extension" has been killed.');
+	console.log('Your extension "abacus-structurizr-dsl-extension" has been killed.');
 }
 
 function showWelcomeMessage(context: vscode.ExtensionContext) {
-	let previousVersion = context.globalState.get<string>('structurizr-dsl-abacus-extension-version');
-	let currentVersion = vscode.extensions.getExtension('Elsevier.structurizr-dsl-abacus-extension')?.packageJSON?.version;
+	let previousVersion = context.globalState.get<string>('abacus-structurizr-dsl-extension');
+	let currentVersion = vscode.extensions.getExtension('Elsevier.abacus-structurizr-dsl-extension')?.packageJSON?.version;
 	let message : string | null = null;
 	let previousVersionArray = previousVersion ? previousVersion.split('.').map((s: string) => Number(s)) : [0, 0, 0];
 	let currentVersionArray = currentVersion.split('.').map((s: string) => Number(s));
 	if (previousVersion === undefined || previousVersion.length === 0) {
-		message = "Thanks for using Structurizr DSL Abacus Extension.";
+		message = "Thanks for using Abacus Structurizr DSL Extension.";
 	} else if (currentVersion !== previousVersion && (
 		// (previousVersionArray[0] === currentVersionArray[0] && previousVersionArray[1] === currentVersionArray[1] && previousVersionArray[2] < currentVersionArray[2]) ||
 		(previousVersionArray[0] === currentVersionArray[0] && previousVersionArray[1] < currentVersionArray[1]) ||
 		(previousVersionArray[0] < currentVersionArray[0])
 	)
 	) {
-		message = "Structurizr DSL Abacus Extension updated to " + currentVersion;
+		message = "Abacus Structurizr DSL Extension updated to " + currentVersion;
 	}
 	if (message) {
 		vscode.window.showInformationMessage(message, '⭐️ Rate', '⭐️ Star on Github', '🪲 Report Bug')

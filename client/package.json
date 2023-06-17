@@ -7,10 +7,10 @@
 	},
 	"license": "MIT",
 	"version": "0.6.1",
-	"publisher": "gfrsoftware",
+	"publisher": "Elsevier",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/gfrsoftware/structurizr-dsl-abacus-extension"
+		"url": "https://github.com/elsevierlabs-os/structurizr-dsl-abacus-extension"
 	},
 	"engines": {
 		"vscode": "^1.63.0"
