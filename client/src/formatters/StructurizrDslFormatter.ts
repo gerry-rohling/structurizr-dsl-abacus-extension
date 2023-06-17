@@ -5,6 +5,9 @@ import { DslContext } from "./DslContext";
 import { StructurizrDslTokens } from "./StructurizrDslTokens";
 
 // Please see https://github.com/structurizr/dsl/blob/master/src/main/java/com/structurizr/dsl/StructurizrDslFormatter.java
+// The above has been deprecated and removed from the official code base as auto generation of DSL is no longer supported.
+// It is expected that DSL is hand written, fed into a diagram and edited as a diagram. Pretty much the design I have going here too
+// PARSING DSL is very much still supported so I do expect to carry on with DSL syntax highlighting, etc
 
 export class StructurizrDslFormatter extends StructurizrDslTokens {
 

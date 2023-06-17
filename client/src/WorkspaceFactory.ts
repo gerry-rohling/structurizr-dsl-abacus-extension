@@ -171,4 +171,9 @@ export class WorkspaceFactory {
         });
         return workspace;
     }
+
+    async parseDSL(arg0: string): Promise<Workspace> {
+		let workspace = new Workspace("Some workspace name", "Some workspace description");
+        return workspace;
+	}
 }
