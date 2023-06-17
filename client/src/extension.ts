@@ -158,7 +158,7 @@ function showWelcomeMessage(context: vscode.ExtensionContext) {
 					vscode.env.openExternal(vscode.Uri.parse('https://github.com/elsevierlabs-os/structurizr-dsl-abacus-extension'));
 				}
 			});
-		context.globalState.update('structurizr-dsl-abacus-extension-version', currentVersion);
+		context.globalState.update('abacus-structurizr-dsl-extension', currentVersion);
 	}
 }
 
