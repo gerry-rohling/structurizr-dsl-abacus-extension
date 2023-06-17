@@ -27,4 +27,22 @@ export class StructurizrDslParser extends StructurizrDslTokens {
     private workspace: Workspace;
     private extendingWorkspace: boolean = false;
     private restricted: boolean = false;
+
+    constructor() {
+        super();
+        this.contextStack = [];
+        this.identifiersRegister = new IdentifiersRegister();
+        this.constants = new Map<string, Constant>();
+    }
+
+    parse(dslDocument: string) {
+        // I think we need to split this doc into a list of strings, one string per line
+        // We then need to feed each line into a parser
+        throw new Error('Method not implemented.');
+    }
+
+    getWorkspace(): Workspace | PromiseLike<Workspace> {
+        throw new Error('Method not implemented.');
+    }
+
 }

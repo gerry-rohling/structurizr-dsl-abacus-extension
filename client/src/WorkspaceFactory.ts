@@ -7,6 +7,7 @@ import {
     CreateImpliedRelationshipsUnlessAnyRelationshipExistsStrategy,
 } from 'structurizr-typescript';
 import { AbacusClient } from './AbacusClient';
+import { StructurizrDslParser } from './formatters/StructurizrDslParser';
 
 export class WorkspaceFactory {
 
@@ -172,8 +173,9 @@ export class WorkspaceFactory {
         return workspace;
     }
 
-    async parseDSL(arg0: string): Promise<Workspace> {
-		let workspace = new Workspace("Some workspace name", "Some workspace description");
-        return workspace;
+    async parseDSL(dsl: string): Promise<Workspace> {
+        let parser = new StructurizrDslParser();
+        parser.parse(dsl);
+        return parser.getWorkspace();
 	}
 }
