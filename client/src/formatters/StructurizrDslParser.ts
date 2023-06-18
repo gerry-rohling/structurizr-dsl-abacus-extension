@@ -35,10 +35,98 @@ export class StructurizrDslParser extends StructurizrDslTokens {
         this.constants = new Map<string, Constant>();
     }
 
-    parse(dslDocument: string) {
-        // I think we need to split this doc into a list of strings, one string per line
-        // We then need to feed each line into a parser
-        throw new Error('Method not implemented.');
+    parseDsl(dslDocument: string) {
+        if (dslDocument) {
+            // I think we need to split this doc into a list of strings, one string per line
+            let lines = dslDocument.split(/\r?\n/);
+            // We then need to feed each line into a parser
+            this.parseLines(lines);
+        }
+    }
+
+    // Line 187 void parse(List<String> lines, File dslFile) throws StructurizrDslParserException 
+    parseLines(lines: string[]) {
+        let dslLines = this.preProcessLines(lines);
+        for (const dslLine of dslLines){
+            let includeInDslSourceLines = true;
+            let line = dslLine.getSource();
+
+            if (line.startsWith(StructurizrDslParser.BOM)){
+                // This caters for UTF-8 files with BOM
+                line = line.substring(1);
+            }
+
+            try {
+                if (StructurizrDslParser.EMPTY_LINE_PATTERN.test(line)) {
+                    // do nothing
+                } else if (StructurizrDslParser.COMMENT_PATTERN.test(line)) {
+                    // do nothing
+                } else if (this.inContext(InlineScriptDslContext)) {
+                    if (DslContext.CONTEXT_END_TOKEN === line.trim()){
+                        this.endContext();
+                    } else {
+                        this.getContext(InlineScriptDslContext).addLine(line);
+                    }
+                } else {
+                    let listOfTokens:string[] = new Tokenizer().tokenize(line);
+                    
+                }
+            } catch(e){
+                console.log('StructurizrDslParser threw exception: ' + e.message);
+            }
+        }
+    }
+
+    getContext(testContext: any): DslContext {
+        if (this.inContext(testContext)) {
+            return this.contextStack[this.contextStack.length-1];
+        } else {
+            throw new Error("Attempted to fetch context of wrong type");
+        }
+    }
+
+    endContext() {
+        if (this.contextStack.length) {
+            let context: DslContext = this.contextStack.pop();
+            context.end();
+        } else {
+            throw new Error("Unexpected end of context");
+        }
+    }
+
+    inContext(testContext: any): boolean {
+        if (this.contextStack.length){
+            let same = testContext.prototype.isPrototypeOf(this.contextStack[this.contextStack.length - 1]);
+            return same;
+        } else {
+            return false;
+        }
+    }
+
+    preProcessLines(lines: string[]): DslLine[] {
+        let dslLines: DslLine[] = [];
+        let lineNumber = 1;
+        let buf = '';
+        let lineComplete = true;
+        for (const line of lines) {
+            if (line.endsWith(StructurizrDslParser.MULTI_LINE_SEPARATOR)) {
+                buf += line.substring(0, line.length - 1);
+                lineComplete = false;
+            } else {
+                if (lineComplete) {
+                    buf += line;
+                } else {
+                    buf += line.trimStart();
+                    lineComplete = true;
+                }
+            }
+            if (lineComplete) {
+                dslLines.push(new DslLine(buf, lineNumber));
+                buf = '';
+            }
+            lineNumber++;
+        }
+        return dslLines;
     }
 
     getWorkspace(): Workspace | PromiseLike<Workspace> {

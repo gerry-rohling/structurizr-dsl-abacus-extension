@@ -175,7 +175,7 @@ export class WorkspaceFactory {
 
     async parseDSL(dsl: string): Promise<Workspace> {
         let parser = new StructurizrDslParser();
-        parser.parse(dsl);
+        parser.parseDsl(dsl);
         return parser.getWorkspace();
 	}
 }
