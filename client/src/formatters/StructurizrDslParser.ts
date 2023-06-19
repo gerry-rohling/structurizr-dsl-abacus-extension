@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Workspace } from "structurizr-typescript";
 import { StructurizrDslTokens } from "./StructurizrDslTokens";
+import { env } from "process";
 
 // This class takes a structurizr DSL file and parses it into a workspace object
 // There appears to be no TypeScript version of this so I am going to use the Java 
@@ -69,12 +70,42 @@ export class StructurizrDslParser extends StructurizrDslTokens {
                     }
                 } else {
                     let listOfTokens:string[] = new Tokenizer().tokenize(line);
-                    
+                    let substitutedTokens: string[] = listOfTokens.map(this.substituteStrings);
+
+                    let tokens: Tokens = new Tokens(substitutedTokens);
                 }
             } catch(e){
                 console.log('StructurizrDslParser threw exception: ' + e.message);
             }
         }
+    }
+
+    substituteStrings(token: string): string {
+        let before: string = null;
+        let after: string = null;
+        const matches = token.matchAll(StructurizrDslParser.STRING_SUBSTITUTION_PATTERN);
+        for (const match of matches) {
+            console.log(match);
+            before = '';
+            after = null;
+            let name: string = before.substring(2, before.length-1);
+            if (this.constants.has(name)) {
+                after = this.constants.get(name).getValue();
+            } else {
+                if (!this.restricted) {
+                    let environmentVariable: string = env[name];
+                    if (environmentVariable) {
+                        after = environmentVariable;
+                    }
+                }
+            }
+        }
+
+        if (after) {
+            token = token.replace(before, after);
+        }
+
+        return token;
     }
 
     getContext(testContext: any): DslContext {
