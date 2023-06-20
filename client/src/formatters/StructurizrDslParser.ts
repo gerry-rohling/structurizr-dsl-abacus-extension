@@ -2,6 +2,8 @@
 import { Workspace } from "structurizr-typescript";
 import { StructurizrDslTokens } from "./StructurizrDslTokens";
 import { env } from "process";
+import { DslContext } from "./DslContext";
+import { InlineScriptDslContext } from "./InlineScriptDslContext";
 
 // This class takes a structurizr DSL file and parses it into a workspace object
 // There appears to be no TypeScript version of this so I am going to use the Java 
@@ -13,8 +15,9 @@ export class StructurizrDslParser extends StructurizrDslTokens {
 
     private static readonly BOM: string = "\uFEFF";
     private static readonly EMPTY_LINE_PATTERN: RegExp = /^\\s*/;
-    private static readonly COMMENT_PATTERN: RegExp = /^\\s*?/;
-    private static readonly MULTI_LINE_COMMENT_START_TOKEN: string = "";
+    private static readonly COMMENT_PATTERN: RegExp = /^\s*?(.*)$/;
+    private static readonly MULTI_LINE_COMMENT_START_TOKEN: string = "/*";
+    private static readonly MULTI_LINE_COMMENT_END_TOKEN: string = "*/";
     private static readonly MULTI_LINE_SEPARATOR: string = "\\";   
     private static readonly STRING_SUBSTITUTION_PATTERN: RegExp = /(\\$\\{[a-zA-Z0-9-_.]+?})/;
     private static readonly STRUCTURIZR_DSL_IDENTIFIER_PROPERTY_NAME: string = "structurizr.dsl.identifier"; 
@@ -66,18 +69,42 @@ export class StructurizrDslParser extends StructurizrDslTokens {
                     if (DslContext.CONTEXT_END_TOKEN === line.trim()){
                         this.endContext();
                     } else {
-                        this.getContext(InlineScriptDslContext).addLine(line);
+                        (this.getContext(InlineScriptDslContext) as InlineScriptDslContext).addLine(line);
                     }
                 } else {
                     let listOfTokens:string[] = new Tokenizer().tokenize(line);
                     let substitutedTokens: string[] = listOfTokens.map(this.substituteStrings);
 
                     let tokens: Tokens = new Tokens(substitutedTokens);
+
+                    let identifier: string = null;
+
+                    if ( tokens.size() > 3 && this.ASSIGNMENT_OPERATOR_TOKEN === tokens.get(1) ) {
+                        identifier = tokens.get(0);
+                        this.identifiersRegister.validateIdentifierName(identifier);
+                        tokens = new Tokens(listOfTokens.slice(2));
+                    }
+
+                    let firstToken: string = tokens.get(0);
+
+                    if (line.trim().startsWith(StructurizrDslParser.MULTI_LINE_COMMENT_START_TOKEN)
+                        && line.trim().endsWith(StructurizrDslParser.MULTI_LINE_COMMENT_END_TOKEN)) {
+                            // do nothing
+                    } else if (firstToken.startsWith(StructurizrDslParser.MULTI_LINE_COMMENT_START_TOKEN)) {
+                        this.startContext(new CommentDslContext());
+                    }
                 }
             } catch(e){
                 console.log('StructurizrDslParser threw exception: ' + e.message);
             }
         }
+    }
+
+    startContext(context: any) {
+        context.setWorkspace(this.workspace);
+        context.setIdentifierRegister(this.identifiersRegister);
+        context.setExtendingWorkspace(this.extendingWorkspace);
+        this.contextStack.push(context);
     }
 
     substituteStrings(token: string): string {
@@ -108,7 +135,7 @@ export class StructurizrDslParser extends StructurizrDslTokens {
         return token;
     }
 
-    getContext(testContext: any): DslContext {
+    getContext(testContext: any): any {
         if (this.inContext(testContext)) {
             return this.contextStack[this.contextStack.length-1];
         } else {
