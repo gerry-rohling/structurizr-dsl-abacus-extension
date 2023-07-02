@@ -1,4 +1,4 @@
-class Constant {
+export class Constant {
     private name: string;
     private value: string;
     constructor(name: string, value: string) {

@@ -7,7 +7,7 @@ import {
     CreateImpliedRelationshipsUnlessAnyRelationshipExistsStrategy,
 } from 'structurizr-typescript';
 import { AbacusClient } from './AbacusClient';
-import { StructurizrDslParser } from './formatters/StructurizrDslParser';
+import { StructurizrDslParser } from './parsers/StructurizrDslParser';
 
 export class WorkspaceFactory {
 

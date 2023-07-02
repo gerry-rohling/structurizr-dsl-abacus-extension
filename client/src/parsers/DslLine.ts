@@ -1,4 +1,4 @@
-class DslLine {
+export class DslLine {
     private source: string;
     private lineNumber: number;
 

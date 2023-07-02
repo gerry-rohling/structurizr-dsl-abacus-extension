@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-enum IdentifierScope {
+export enum IdentifierScope {
     Flat,
     Hierarchical,
 }

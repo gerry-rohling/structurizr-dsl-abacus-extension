@@ -1,7 +1,8 @@
 import { type } from "os";
 import { format } from "path";
 import { AutomaticLayout, Component, Container, ContainerInstance, CreateImpliedRelationshipsUnlessAnyRelationshipExistsStrategy, DeploymentElement, DeploymentNode, Element, ElementStyle, Location, ModelItem, Person, RankDirection, Relationship, RelationshipStyle, SoftwareSystem, Workspace } from "structurizr-typescript";
-import { StructurizrDslTokens } from "./StructurizrDslTokens";
+import { StructurizrDslTokens } from "../parsers/StructurizrDslTokens";
+import { DslContext } from "../parsers/DslContext";
 
 // Please see https://github.com/structurizr/dsl/blob/master/src/main/java/com/structurizr/dsl/StructurizrDslFormatter.java
 // The above has been deprecated and removed from the official code base as auto generation of DSL is no longer supported.

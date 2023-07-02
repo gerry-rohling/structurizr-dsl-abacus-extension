@@ -1,4 +1,5 @@
 import { DslContext } from "./DslContext";
+import { ScriptDslContext } from "./ScriptDslContext";
 
 export class InlineScriptDslContext extends ScriptDslContext {
 

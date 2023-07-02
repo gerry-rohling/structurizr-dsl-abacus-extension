@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Workspace } from "structurizr-typescript";
+import { Tokens } from "./Tokens";
 import { StructurizrDslTokens } from "./StructurizrDslTokens";
 import { env } from "process";
 import { DslContext } from "./DslContext";
 import { InlineScriptDslContext } from "./InlineScriptDslContext";
+import { CommentDslContext } from "./CommentDslContext";
+import { IdentifierScope } from "./IdentifierScope";
+import { Constant } from "./Constant";
+import { IdentifiersRegister } from "./IdentifiersRegister";
+import { DslLine } from "./DslLine";
 
 // This class takes a structurizr DSL file and parses it into a workspace object
 // There appears to be no TypeScript version of this so I am going to use the Java 

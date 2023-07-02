@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-class IdentifiersRegister {
+export class IdentifiersRegister {
     private static readonly IDENTIFIER_PATTERN: RegExp = /\\w+/;
 
     validateIdentifierName(identifier: string) {

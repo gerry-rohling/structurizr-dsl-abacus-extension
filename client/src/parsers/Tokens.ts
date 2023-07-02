@@ -1,4 +1,6 @@
-class Tokens {
+import { DslContext } from "./DslContext";
+
+export class Tokens {
     
     private tokens: string[];
 

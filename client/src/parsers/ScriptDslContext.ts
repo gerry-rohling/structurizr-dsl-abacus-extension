@@ -1,5 +1,7 @@
+import { DslContext } from "./DslContext";
+
 /* eslint-disable @typescript-eslint/naming-convention */
-class ScriptDslContext extends DslContext {
+export class ScriptDslContext extends DslContext {
     private static readonly WORKSPACE_VARIABLE_NAME: string = "workspace";
     private static readonly VIEW_VARIABLE_NAME: string = "view";
     private static readonly ELEMENT_VARIABLE_NAME: string = "element";
