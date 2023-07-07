@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Workspace } from "structurizr-typescript";
+import { Relationship, Workspace } from "structurizr-typescript";
 import { Tokens } from "./Tokens";
 import { StructurizrDslTokens } from "./StructurizrDslTokens";
 import { env } from "process";
@@ -93,11 +93,25 @@ export class StructurizrDslParser extends StructurizrDslTokens {
 
                     let firstToken: string = tokens.get(0);
 
-                    if (line.trim().startsWith(StructurizrDslParser.MULTI_LINE_COMMENT_START_TOKEN)
-                        && line.trim().endsWith(StructurizrDslParser.MULTI_LINE_COMMENT_END_TOKEN)) {
+                    if (line.trim().startsWith(StructurizrDslParser.MULTI_LINE_COMMENT_START_TOKEN) && line.trim().endsWith(StructurizrDslParser.MULTI_LINE_COMMENT_END_TOKEN)) {
                             // do nothing
                     } else if (firstToken.startsWith(StructurizrDslParser.MULTI_LINE_COMMENT_START_TOKEN)) {
                         this.startContext(new CommentDslContext());
+                    } else if (this.inContext(CommentDslContext) && line.trim().endsWith(StructurizrDslParser.MULTI_LINE_COMMENT_END_TOKEN)) {
+                        this.endContext();
+                    } else if (this.inContext(CommentDslContext)) {
+                        // do nothing
+                    } else if (DslContext.CONTEXT_END_TOKEN === tokens.get(0)) {
+                        this.endContext();
+                    } else if (this.INCLUDE_FILE_TOKEN === firstToken.toLowerCase()) {
+                        // We are not going to support file includes yet
+                        throw new Error('not implemented');
+                    } else if (tokens.size() > 2 && this.RELATIONSHIP_TOKEN === tokens.get(1) && (this.inContext(ModelDslContext) || this.inContext(EnterpriseDslContext) || this.inContext(CustomElementDslContext) || this.inContext(PersonDslContext) || this.inContext(SoftwareSystemDslContext) || this.inContext(ContainerDslContext) || this.inContext(ComponentDslContext) || this.inContext(DeploymentEnvironmentDslContext) || this.inContext(DeploymentNodeDslContext) || this.inContext(InfrastructureNodeDslContext) || this.inContext(SoftwareSystemInstanceDslContext) || this.inContext(ContainerInstanceDslContext)) {
+                        let relationship: Relationship = new ExplicitRelationshipParser().parse(getContext(), tokens.withoutContextStartToken());
+                        if (this.shouldStartContext(tokens)) {
+                            this.startContext(new RelationshipDslContext(relationship));
+                        }
+                        registerIdentifier(identifier, relationship);
                     }
                 }
             } catch(e){
